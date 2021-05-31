@@ -1,12 +1,18 @@
 package com.micle.totemofreviving.network;
 
 import com.micle.totemofreviving.TotemOfReviving;
+import com.micle.totemofreviving.items.StrawTotemItem;
 import com.micle.totemofreviving.items.TotemOfRevivingItem;
+import com.micle.totemofreviving.utils.Utils;
+import net.minecraft.client.audio.Sound;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.GameType;
@@ -41,7 +47,7 @@ public class C2SRequestPlayerRevive {
             if (sender == null) { return; }
 
             ItemStack item = sender.getItemInHand(msg.hand);
-            if (item.getOrCreateTag().getInt(TotemOfRevivingItem.TAG_TARGET_INDEX) > TotemOfReviving.players.getPlayerCount()-1) {
+            if (item.getOrCreateTag().getInt(TotemOfRevivingItem.TAG_TARGET_INDEX) > TotemOfReviving.players.getPlayerCount()-1 || item.getOrCreateTag().getString(TotemOfRevivingItem.TAG_TARGET_NAME).equals("")) {
                 sender.sendMessage(new StringTextComponent(TextFormatting.RED + "Error getting target! (Try selecting the target again)"), sender.getUUID());
             } else {
                 ServerPlayerEntity player_to_revive = TotemOfReviving.players.getPlayerByName(item.getOrCreateTag().getString(TotemOfRevivingItem.TAG_TARGET_NAME));
@@ -51,18 +57,27 @@ public class C2SRequestPlayerRevive {
                 if (player_to_revive.isSpectator()) {
                     if (player_to_revive_world.equals(sender_world)) {
                         if (item.getOrCreateTag().getInt(TotemOfRevivingItem.TAG_CHARGE_AMOUNT) >= required_charge) {
+                            if (item.getOrCreateTag().contains(StrawTotemItem.TAG_FAIL_CHANCE)) {
+                                int fail_chance = item.getOrCreateTag().getInt(StrawTotemItem.TAG_FAIL_CHANCE);
+                                if (Utils.randomIntRange(0, 100) <= fail_chance) {
+                                    item.getOrCreateTag().putInt(StrawTotemItem.TAG_CHARGE_AMOUNT, item.getOrCreateTag().getInt(StrawTotemItem.TAG_CHARGE_AMOUNT)-required_charge);
+                                    item.getOrCreateTag().putInt(StrawTotemItem.TAG_FAIL_CHANCE, fail_chance-(5*required_charge));
+                                    sender.hurt(DamageSource.GENERIC, (sender.getHealth() * (fail_chance / 100.0f)));
+                                    return;
+                                }
+                            }
                             player_to_revive.teleportTo(sender.getX(), sender.getY(), sender.getZ());
                             player_to_revive.setGameMode(GameType.SURVIVAL);
                             item.getOrCreateTag().putInt(TotemOfRevivingItem.TAG_CHARGE_AMOUNT, item.getOrCreateTag().getInt(TotemOfRevivingItem.TAG_CHARGE_AMOUNT) - required_charge);
-                            sender.sendMessage(new StringTextComponent(TextFormatting.AQUA + "Successfully revived " + TextFormatting.BLUE + player_to_revive.getDisplayName().getString()), sender.getUUID());
+                            sender.sendMessage(new StringTextComponent(TextFormatting.GRAY + "Successfully revived " + TextFormatting.DARK_GRAY + player_to_revive.getDisplayName().getString()), sender.getUUID());
                         } else {
-                            sender.sendMessage(new StringTextComponent(TextFormatting.AQUA + "Not enough charge! Required charge is: " + TextFormatting.BLUE + required_charge), sender.getUUID());
+                            sender.sendMessage(new StringTextComponent(TextFormatting.GRAY + "Not enough charge! Required charge is: " + TextFormatting.DARK_GRAY + required_charge), sender.getUUID());
                         }
                     } else {
-                        sender.sendMessage(new StringTextComponent(TextFormatting.BLUE + player_to_revive.getDisplayName().getString() + TextFormatting.AQUA + " is not in this dimension!"), sender.getUUID());
+                        sender.sendMessage(new StringTextComponent(TextFormatting.DARK_GRAY + player_to_revive.getDisplayName().getString() + TextFormatting.GRAY + " is not in this dimension!"), sender.getUUID());
                     }
                 } else {
-                    sender.sendMessage(new StringTextComponent(TextFormatting.BLUE + player_to_revive.getDisplayName().getString() + TextFormatting.AQUA + " is not dead!"), sender.getUUID());
+                    sender.sendMessage(new StringTextComponent(TextFormatting.DARK_GRAY + player_to_revive.getDisplayName().getString() + TextFormatting.GRAY + " is not dead!"), sender.getUUID());
                 }
             }
         });

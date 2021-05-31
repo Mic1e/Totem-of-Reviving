@@ -1,10 +1,15 @@
 package com.micle.totemofreviving.network;
 
 import com.micle.totemofreviving.TotemOfReviving;
+import com.micle.totemofreviving.items.StrawTotemItem;
 import com.micle.totemofreviving.items.TotemOfRevivingItem;
+import com.micle.totemofreviving.utils.Utils;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -43,6 +48,15 @@ public class C2SRequestTotemCharge {
             charge_item.setCount(charge_item.getCount()-1);
             totem_item.getOrCreateTag().putInt(TotemOfRevivingItem.TAG_CHARGE_AMOUNT, totem_item.getOrCreateTag().getInt(TotemOfRevivingItem.TAG_CHARGE_AMOUNT)+1);
 
+            if (totem_item.getOrCreateTag().contains(StrawTotemItem.TAG_FAIL_CHANCE)) {
+                int fail_chance = totem_item.getOrCreateTag().getInt(StrawTotemItem.TAG_FAIL_CHANCE);
+                if (Utils.randomIntRange(0, 100) <= fail_chance) {
+                    sender.setItemInHand(msg.hand, new ItemStack(Items.AIR));
+                    sender.hurt(DamageSource.GENERIC, (sender.getHealth() * (fail_chance / 100.0f)));
+                } else {
+                    totem_item.getOrCreateTag().putInt(StrawTotemItem.TAG_FAIL_CHANCE, fail_chance+5);
+                }
+            }
         });
         context.setPacketHandled(true);
     }

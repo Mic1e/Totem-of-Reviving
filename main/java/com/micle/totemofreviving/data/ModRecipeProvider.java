@@ -30,5 +30,24 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("@E@")
                 .unlockedBy("has_item", has(ModItems.TOTEM_OF_REVIVING.get()))
                 .save(consumer);
+        ShapedRecipeBuilder.shaped(ModItems.STRAW_TOTEM.get())
+                .define('W', Items.WHEAT)
+                .define('/', Items.STICK)
+                .define('S', Items.STRING)
+                .define('N', Items.IRON_NUGGET)
+                .pattern("NSN")
+                .pattern("NWN")
+                .pattern("N/N")
+                .unlockedBy("has_item", has(Items.WHEAT))
+                .save(consumer);
+        ShapedRecipeBuilder.shaped(ModItems.STRAW_CHARGE.get())
+                .define('W', Items.WHEAT)
+                .define('E', Items.EMERALD)
+                .define('I', Items.IRON_INGOT)
+                .pattern("IWI")
+                .pattern("WEW")
+                .pattern("IWI")
+                .unlockedBy("has_item", has(Items.EMERALD))
+                .save(consumer);
     }
 }

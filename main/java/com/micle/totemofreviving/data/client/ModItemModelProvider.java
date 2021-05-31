@@ -23,6 +23,8 @@ public class ModItemModelProvider extends ItemModelProvider {
 
         builder(item_generated, "totem_of_reviving");
         builder(item_generated, "reviving_charge");
+        builder(item_generated, "straw_totem");
+        builder(item_generated, "straw_charge");
     }
 
     private ItemModelBuilder builder(ModelFile item_generated, String name) {
