@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IWI",
+    "WEW",
+    "IWI"
+  ],
+  "key": {
+    "W": {
+      "item": "minecraft:wheat"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "totemofreviving:straw_charge"
+  }
+}

@@ -45,7 +45,7 @@ public class C2SRequestTotemTarget {
 
             item.getOrCreateTag().putInt(TotemOfRevivingItem.TAG_TARGET_INDEX, current_player_index);
             item.getOrCreateTag().putString(TotemOfRevivingItem.TAG_TARGET_NAME, TotemOfReviving.players.getPlayers().get(current_player_index).getDisplayName().getString());
-            sender.sendMessage(new StringTextComponent(TextFormatting.AQUA + "Target: " + TextFormatting.BLUE + item.getOrCreateTag().getString(TotemOfRevivingItem.TAG_TARGET_NAME)), sender.getUniqueID());
+            sender.sendMessage(new StringTextComponent(TextFormatting.GRAY + "Target: " + TextFormatting.DARK_GRAY + item.getOrCreateTag().getString(TotemOfRevivingItem.TAG_TARGET_NAME)), sender.getUniqueID());
         });
         context.setPacketHandled(true);
     }

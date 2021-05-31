@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NSN",
+    "NWN",
+    "N/N"
+  ],
+  "key": {
+    "W": {
+      "item": "minecraft:wheat"
+    },
+    "/": {
+      "item": "minecraft:stick"
+    },
+    "S": {
+      "item": "minecraft:string"
+    },
+    "N": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "result": {
+    "item": "totemofreviving:straw_totem"
+  }
+}

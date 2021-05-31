@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-
 import net.minecraft.item.Rarity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -25,28 +24,32 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-public class TotemOfRevivingItem extends Item {
+public class StrawTotemItem extends Item {
     public static final String TAG_CHARGE_AMOUNT = "charge";
     public static final String TAG_TARGET_INDEX = "target_index";
     public static final String TAG_TARGET_NAME = "target_name";
+    public static final String TAG_FAIL_CHANCE = "fail_chance";
+    public static final int STARTING_FAIL_CHANCE = 45;
 
-    public TotemOfRevivingItem() {
-        super(new Item.Properties().group(ItemGroup.MISC).maxStackSize(1).rarity(Rarity.RARE));
+    public StrawTotemItem() {
+        super(new Properties().group(ItemGroup.MISC).maxStackSize(1).rarity(Rarity.UNCOMMON));
     }
 
     @Override
     public void addInformation(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
         super.addInformation(stack, world, tooltip, flag);
-        tooltip.add(new StringTextComponent(TextFormatting.DARK_AQUA + "Charges: " + TextFormatting.BLUE + stack.getOrCreateTag().getInt(TAG_CHARGE_AMOUNT)));
-        tooltip.add(new StringTextComponent(TextFormatting.DARK_AQUA + "Target: " + TextFormatting.BLUE + stack.getOrCreateTag().getString(TAG_TARGET_NAME)));
+        tooltip.add(new StringTextComponent(TextFormatting.GOLD + "Charges: " + TextFormatting.GRAY + stack.getOrCreateTag().getInt(TAG_CHARGE_AMOUNT)));
+        tooltip.add(new StringTextComponent(TextFormatting.GOLD + "Target: " + TextFormatting.GRAY + stack.getOrCreateTag().getString(TAG_TARGET_NAME)));
+        tooltip.add(new StringTextComponent(TextFormatting.GOLD + "Fail Chance: " + TextFormatting.GRAY + stack.getOrCreateTag().getInt(TAG_FAIL_CHANCE)));
+        tooltip.add(new StringTextComponent( TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + "\"Feels kinda funky.\""));
         tooltip.add(new StringTextComponent(""));
         if (InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT)) {
-            tooltip.add(new StringTextComponent(TextFormatting.AQUA + "R-CLICK"));
-            tooltip.add(new StringTextComponent(TextFormatting.DARK_AQUA + "When other hand is empty: attempt to revive target."));
-            tooltip.add(new StringTextComponent(TextFormatting.DARK_AQUA + "When other hand has " + TextFormatting.BLUE + "Reviving Charge" + TextFormatting.DARK_AQUA + ": charge totem."));
+            tooltip.add(new StringTextComponent(TextFormatting.YELLOW + "R-CLICK"));
+            tooltip.add(new StringTextComponent(TextFormatting.GOLD + "When other hand is empty: attempt to revive target."));
+            tooltip.add(new StringTextComponent(TextFormatting.GOLD + "When other hand has " + TextFormatting.GRAY + "Straw Reviving Charge" + TextFormatting.GOLD + ": charge totem."));
             tooltip.add(new StringTextComponent(""));
-            tooltip.add(new StringTextComponent(TextFormatting.AQUA + "SHIFT R-CLICK"));
-            tooltip.add(new StringTextComponent(TextFormatting.DARK_AQUA + "Cycle through available targets."));
+            tooltip.add(new StringTextComponent(TextFormatting.YELLOW + "SHIFT R-CLICK"));
+            tooltip.add(new StringTextComponent(TextFormatting.GOLD + "Cycle through available targets."));
         } else {
             tooltip.add(new StringTextComponent(TextFormatting.GRAY + "[" + TextFormatting.WHITE + "LSHIFT" + TextFormatting.GRAY + "] for advanced tooltip."));
         }
@@ -56,6 +59,7 @@ public class TotemOfRevivingItem extends Item {
     public void onCreated(ItemStack stack, World world, PlayerEntity player) {
         super.onCreated(stack, world, player);
         stack.getOrCreateTag().putInt(TAG_CHARGE_AMOUNT, 0);
+        stack.getOrCreateTag().putInt(TAG_FAIL_CHANCE, STARTING_FAIL_CHANCE);
     }
 
     @Override
@@ -71,7 +75,7 @@ public class TotemOfRevivingItem extends Item {
             }
             Item item_charge = player.getHeldItem(item_charge_hand).getItem();
 
-            if (item_charge instanceof RevivingChargeItem) {
+            if (item_charge instanceof StrawChargeItem) {
                 TotemOfReviving.INSTANCE.sendToServer(new C2SRequestTotemCharge(player.getUniqueID(), hand, item_charge_hand));
             } else {
                 TotemOfReviving.INSTANCE.sendToServer(new C2SRequestPlayerRevive(player.getUniqueID(), hand));
