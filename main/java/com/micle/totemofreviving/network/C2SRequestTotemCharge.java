@@ -9,6 +9,8 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -52,7 +54,7 @@ public class C2SRequestTotemCharge {
                 int fail_chance = totem_item.getOrCreateTag().getInt(StrawTotemItem.TAG_FAIL_CHANCE);
                 if (Utils.randomIntRange(0, 100) <= fail_chance) {
                     sender.setItemInHand(msg.hand, new ItemStack(Items.AIR));
-                    sender.hurt(DamageSource.GENERIC, (sender.getHealth() * (fail_chance / 100.0f)));
+                    sender.addEffect(new EffectInstance(Effects.POISON, ((fail_chance*10) / 2), 1));
                 } else {
                     totem_item.getOrCreateTag().putInt(StrawTotemItem.TAG_FAIL_CHANCE, fail_chance+5);
                 }
