@@ -7,6 +7,8 @@ import com.micle.totemofreviving.utils.Utils;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
@@ -59,8 +61,10 @@ public class C2SRequestPlayerRevive {
                                 if (Utils.randomIntRange(0, 100) <= fail_chance) {
                                     item.getOrCreateTag().putInt(StrawTotemItem.TAG_CHARGE_AMOUNT, item.getOrCreateTag().getInt(StrawTotemItem.TAG_CHARGE_AMOUNT)-required_charge);
                                     item.getOrCreateTag().putInt(StrawTotemItem.TAG_FAIL_CHANCE, fail_chance-(5*required_charge));
-                                    sender.attackEntityFrom(DamageSource.GENERIC, (sender.getHealth() * (fail_chance / 100.0f)));
+                                    sender.addPotionEffect(new EffectInstance(Effects.POISON, ((fail_chance*10) / 2), 1));
                                     return;
+                                } else {
+                                    item.getOrCreateTag().putInt(StrawTotemItem.TAG_FAIL_CHANCE, fail_chance-(5*required_charge));
                                 }
                             }
                             player_to_revive.teleportKeepLoaded(sender.getPosX(), sender.getPosY(), sender.getPosZ());
